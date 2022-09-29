@@ -1,26 +1,26 @@
 pipeline {
   agent any
   stages {
-    stage('Checkout Scm') {
+    stage('Git') {
       steps {
         git 'https://github.com/michail-77/netology-test/'
       }
     }
 
-    stage('Shell script 0') {
+    stage('Test') {
       steps {
         sh '/usr/local/go/bin/go test .'
       }
     }
 
-    stage('Shell script 1') {
+    stage('Build') {
       steps {
-        sh 'docker build . -t ubuntu-bionic:8082/freestyle:test'
+        sh 'RUN CGO_ENABLED=0 GOOS=linux go build -a -buildvcs=false -installsuffix nocgo -o /app .'
       }
     }
-    stage('Shell script 2') {
+    stage('Push') {
       steps {
-        sh 'docker login ubuntu-bionic:8082 -u admin -p admin && docker push ubuntu-bionic:8082/freestyle:test && docker logout'
+        sh 'docker login ubuntu-bionic:8082 -u admin -p admin && docker push ubuntu-bionic:8082/go:test && docker logout'
       }
     }
   }
